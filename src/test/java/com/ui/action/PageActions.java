@@ -12,7 +12,7 @@ public class PageActions {
 
     WebDriver driver;
     public PageActions() {
-        this.driver = DriverManager.getInstance().getDriver();
+        this.driver = DriverManager.getDriver();
     }
 
     public void click(WebElement element, String elementName) {

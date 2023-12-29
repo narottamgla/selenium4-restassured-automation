@@ -1,79 +1,81 @@
 package com.ui.driverutils;
 
-import com.ui.executiondata.ExecutionConf;
-import lombok.extern.log4j.Log4j2;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
-@Log4j2
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class DriverFactory {
+    public static WebDriver createDriver(String browser, String environment) throws MalformedURLException {
+        WebDriver driver;
 
-    public  WebDriver getDriver() {
-
-
-        if(ExecutionConf.EXECUTION_MODE.equalsIgnoreCase("local")) {
-            return getLocalDriver();
+        if ("local".equalsIgnoreCase(environment)) {
+            driver = createLocalDriver(browser);
+        } else if ("saucelabs".equalsIgnoreCase(environment)) {
+            driver = createSauceLabsDriver(browser);
         } else {
-            return getRemoteDriver();
+            throw new IllegalArgumentException("Invalid environment: " + environment);
         }
+
+        return driver;
     }
 
-    private WebDriver getRemoteDriver() {
-        return null;
-    }
+    private static WebDriver createLocalDriver(String browser) {
+        WebDriver driver = null;
 
-    private WebDriver getLocalDriver() {
-        return getDriver(ExecutionConf.BROWSER);
-    }
-
-    private WebDriver getDriver(String browser) {
         switch (browser.toLowerCase()) {
             case "chrome":
-                return getChromeDiver();
+                driver = createChromeDriver();
+                break;
             case "firefox":
-                return getFirefoxDriver();
-            case "ie":
-                return getIEDriver();
-            case "edge":
-                return getEdgeDriver();
-            case "opera":
-                return getOperaDriver();
-            case "phantomjs":
-                return getPhantomJSDriver();
+                driver = createFirefoxDriver();
+                break;
+            // Add more cases for other browsers if needed
+
             default:
-                return getChromeDiver();
+                throw new IllegalArgumentException("Invalid browser name: " + browser);
         }
-    }
 
-    private WebDriver getChromeDiver() {
-        log.info("Creating new Chrome browser instance");
-        WebDriver driver = new ChromeDriver();
-        driver.manage().window().fullscreen();
         return driver;
     }
 
-    public WebDriver getFirefoxDriver() {
-        log.info("Creating new Firefox driver instance");
-        WebDriver driver = new FirefoxDriver();
-        driver.manage().window().fullscreen();
-        return driver;
+    private static WebDriver createSauceLabsDriver(String browser) throws MalformedURLException {
+        MutableCapabilities sauceOptions = new MutableCapabilities();
+        // Add Sauce Labs specific capabilities as needed
+
+        MutableCapabilities capabilities;
+
+        switch (browser.toLowerCase()) {
+            case "chrome":
+                capabilities = new MutableCapabilities();
+                capabilities.setCapability("browserName", "chrome");
+                capabilities.setCapability("sauce:options", sauceOptions);
+                break;
+            case "firefox":
+                capabilities = new MutableCapabilities();
+                capabilities.setCapability("browserName", "firefox");
+                capabilities.setCapability("sauce:options", sauceOptions);
+                break;
+            // Add more cases for other browsers if needed
+
+            default:
+                throw new IllegalArgumentException("Invalid browser name: " + browser);
+        }
+
+        return new RemoteWebDriver(new URL("https://your-saucelabs-url.com/wd/hub"), capabilities);
     }
 
-    public WebDriver getIEDriver() {
-        return null;
+    private static WebDriver createChromeDriver() {
+        // Use WebDriverManager to set up ChromeDriver for local execution
+        return new ChromeDriver();
     }
 
-    public WebDriver getEdgeDriver() {
-        return null;
+    private static WebDriver createFirefoxDriver() {
+        // Use WebDriverManager to set up FirefoxDriver for local execution
+        return new FirefoxDriver();
     }
-
-    public WebDriver getOperaDriver() {
-        return null;
-    }
-
-    public WebDriver getPhantomJSDriver() {
-        return null;
-    }
-
 }

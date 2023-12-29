@@ -1,42 +1,54 @@
 package com.ui.driverutils;
 
-import lombok.extern.log4j.Log4j2;
 import org.openqa.selenium.WebDriver;
 
-@Log4j2
+import java.net.MalformedURLException;
+
 public class DriverManager {
+    private static ThreadLocal<WebDriver> webDriverThreadLocal = new ThreadLocal<>();
 
-    WebDriver driver;
-
-    private static ThreadLocal<WebDriver> webDriver = new ThreadLocal<WebDriver>();
-
-
-    private DriverManager() {
-
+    public static WebDriver getDriver() {
+        return webDriverThreadLocal.get();
     }
 
-    public static DriverManager getInstance() {
-        if (webDriver.get() == null) {
-            log.info("Creating New Driver Instance");
-            webDriver.set(new DriverFactory().getDriver());
+    public static void setDriver(String browser, String environment) throws MalformedURLException {
+        WebDriver driver = DriverFactory.createDriver(browser, environment);
+        webDriverThreadLocal.set(driver);
+    }
+
+    public static void quitDriver() {
+        if (webDriverThreadLocal.get() != null) {
+            webDriverThreadLocal.get().quit();
+            webDriverThreadLocal.remove();
         }
-        log.info("Returning Existing driver instance");
-        return new DriverManager();
-
     }
 
-    public WebDriver getDriver() {
-        return webDriver.get();
+    public static void setUpDriver(String browser, String environment) throws MalformedURLException {
+        if ("local".equalsIgnoreCase(environment)) {
+            setUpLocalDriver(browser);
+        } else if ("saucelabs".equalsIgnoreCase(environment)) {
+            setUpSauceLabsDriver(browser);
+        } else {
+            throw new IllegalArgumentException("Invalid environment: " + environment);
+        }
     }
 
-    public void quitDriver() {
-        webDriver.get().quit();
-        webDriver.remove();
+    private static void setUpLocalDriver(String browser) {
+        //WebDriverManager.chromedriver().setup();
+      //  WebDriverManager.firefoxdriver().setup();
+
+        try {
+            setDriver(browser, "local");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void closeDriver() {
-        webDriver.get().close();
-        webDriver.remove();
+    private static void setUpSauceLabsDriver(String browser) throws MalformedURLException {
+        setDriver(browser, "saucelabs");
     }
 
+    public static void tearDownDriver() {
+        quitDriver();
+    }
 }

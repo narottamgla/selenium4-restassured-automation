@@ -24,9 +24,10 @@ public class ExtentManager {
         ExtentSparkReporter htmlReporter = new ExtentSparkReporter(reportFilePath + fileName);
         log.info("Report being written to: " + reportFilePath);
         htmlReporter.config().setTheme(Theme.STANDARD);
+        htmlReporter.config().setReportName("Selenium Automation");
+        htmlReporter.config().setTimelineEnabled(true);
         htmlReporter.config().setDocumentTitle(fileName);
         htmlReporter.config().setEncoding("utf-8");
-        htmlReporter.config().setReportName(fileName);
 		extentReports = new ExtentReports();
 		extentReports.attachReporter(htmlReporter);
         return extentReports;
@@ -37,14 +38,13 @@ public class ExtentManager {
 
     public static void captureScreenshot() {
 
-        File scrFile = ((TakesScreenshot) DriverManager.getInstance().getDriver()).getScreenshotAs(OutputType.FILE);
+        File scrFile = ((TakesScreenshot) DriverManager.getDriver()).getScreenshotAs(OutputType.FILE);
         Date d = new Date();
         screenshotName = d.toString().replace(":", "_").replace(" ", "_") + ".jpg";
 
         try {
             	FileUtils.copyFile(scrFile, new File(reportFilePath + screenshotName));
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

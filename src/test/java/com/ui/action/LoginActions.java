@@ -14,7 +14,7 @@ public class LoginActions extends PageActions {
 
 
     public LoginActions() {
-        this.driver = DriverManager.getInstance().getDriver();
+        this.driver = DriverManager.getDriver();
         PageFactory.initElements(driver, loginLocators);
     }
     public void navigateToLoginPage() {
