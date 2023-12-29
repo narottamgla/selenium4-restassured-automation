@@ -7,7 +7,11 @@ import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.Markup;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
+import com.ui.driverutils.DriverManager;
 import com.ui.executiondata.ExecutionConf;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
@@ -33,8 +37,15 @@ public class ExtentListeners implements ITestListener {
 		} else {
 			testName = testName + result.getMethod().getMethodName();
 		}
+		WebDriver driver = DriverManager.getDriver();
+		String currentBrowser= "";
+		if(driver instanceof ChromeDriver){
+		 currentBrowser="Chrome";
+		} else if (driver instanceof FirefoxDriver) {
+			currentBrowser="Firefox";
+		}
 
-		ExtentTest test = extent.createTest(testName);
+		ExtentTest test = extent.createTest(testName+ "_"+ currentBrowser);
         testReport.set(test);
         overAllFailure = false;
 	}

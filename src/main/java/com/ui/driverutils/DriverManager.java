@@ -1,10 +1,14 @@
 package com.ui.driverutils;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.openqa.selenium.WebDriver;
 
 import java.net.MalformedURLException;
 
 public class DriverManager {
+
+    private String executionBrowser;
     private static ThreadLocal<WebDriver> webDriverThreadLocal = new ThreadLocal<>();
 
     public static WebDriver getDriver() {

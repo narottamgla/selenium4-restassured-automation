@@ -2,6 +2,8 @@ package com.ui.test;
 
 import com.ui.driverutils.DriverManager;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -12,7 +14,6 @@ import java.net.MalformedURLException;
 
 @Log4j2
 public class BaseTest {
-
 
     @BeforeMethod
     @Parameters("browser")
